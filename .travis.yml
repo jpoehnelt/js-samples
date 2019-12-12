@@ -7,6 +7,8 @@ cache:
   - ".firebase"
   - ".cache/bazel-disk-cache"
 script:
+  - ls .cache/bazel-disk-cache
+  - exit 1
   - ./.travis.sh
 deploy:
 - provider: script
