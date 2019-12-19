@@ -2,7 +2,8 @@ load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
 load("@npm//@babel/cli:index.bzl", "babel")
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//rules:nunjucks.bzl", "nunjucks")
+load("//rules:html.bzl", "html_render")
+load("//rules:prettier.bzl", "prettier")
 load("//rules:strip_region_tags.bzl", "strip_region_tags")
 
 def sample():
@@ -50,32 +51,20 @@ def sample():
         visibility = ["//visibility:public"],
     )
 
-    native.genrule(
-        name = "_data_file",
-        cmd = "$(location //rules:json) -f $(location data.json) -e \"this.key='$$GOOGLE_MAPS_JS_SAMPLES_KEY'\" > $@",
-        srcs = [":data.json"],
-        tools = ["//rules:json"],
-        outs = ["_data.json"],
-    )
-
-    nunjucks()
-
     [
-        native.genrule(
-            name = "prettier_" + src.replace(":", "").split(".")[0],
-            srcs = [src],
-            outs = [out],
-            cmd = "./$(location //rules:prettier) $(location {}) > $@".format(src),
-            tools = ["//rules:prettier"],
+        prettier(
+            src = src,
+            out = out,
         )
+
         for src, out in [
-            (":index_ugly.html", "index.html"),
-            (":jsfiddle_ugly.html", "jsfiddle.html"),
             (":style_ugly.css", "style.css"),
             (":transpiled_ugly.js", "transpiled.js"),
             (":app_ugly.js", "app.js"),
         ]
     ]
+
+    html_render()
 
     native.filegroup(
         name = "js",
@@ -90,6 +79,7 @@ def sample():
         name = "html",
         srcs = [
             ":index.html",
+            ":inlined.html",
             ":jsfiddle.html",
         ],
         visibility = ["//visibility:public"],
