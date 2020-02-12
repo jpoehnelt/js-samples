@@ -6,16 +6,16 @@ load("//rules:nunjucks.bzl", "nunjucks")
 load("//rules:strip_region_tags.bzl", "strip_region_tags")
 
 def sample():
-    strip_region_tags(
-        name = "_js_without_region_tags",
-        input = ":src/index.js",
-        output = "_without_region_tags.js",
-    )
+#     strip_region_tags(
+#         name = "_js_without_region_tags",
+#         input = ":src/index.js",
+#         output = "_without_region_tags.js",
+#     )
 
     rollup_bundle(
         name = "app_ugly",
-        srcs = [":_js_without_region_tags"],
-        entry_point = "_without_region_tags.js",
+        srcs = [":src/index.js"],
+        entry_point = "src/index.js",
         config_file = "//:rollup.config.js",
         format = "iife",
         sourcemap = "false",
